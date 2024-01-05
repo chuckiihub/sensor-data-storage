@@ -1,0 +1,242 @@
+openapi: 3.0.1
+info:
+  title: Sensor and Sensor Data API
+  description: API for sensor storage
+  termsOfService: 'http://www.5gsystems.com/'
+  contact:
+    name: 5gsystems team
+    url: 'http://www.5gsystems.com'
+  version: 1.0.0
+servers:
+  - url: /v1/api
+tags:
+  - name: sensor
+  - name: data
+  - name: storage
+
+paths:
+  /sensor:
+    description: register a new sensor
+    get:
+      operationId: sensorList
+      responses:
+        '200':
+          $ref: '#/components/responses/SensorList'
+
+    post:
+      tags: [sensor, create]
+      operationId: sensorCreate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/sensorCreate'
+      responses:
+        '202':
+          description: ok :)
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+
+  /sensor/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: sensorId
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [sensor, get]
+      operationId: sensorGet
+      responses:
+        '200':
+          $ref: '#/components/responses/Sensor'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      tags: [sensor, delete]
+      operationId: sensorDelete
+      responses:
+        '204':
+          description: sensor deleted
+        '404':
+          description: sensor not found
+
+  /sensor/{id}/health:
+    parameters:
+      - name: id
+        in: path
+        description: sensorId
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: sensorHealth
+      responses:
+        '204':
+          description: OK
+
+  /sensor/{id}/data:
+    parameters:
+      - name: id
+        in: path
+        description: sensorId
+        required: true
+        schema:
+          type: string
+    description: saves sensors data
+    post:
+      tags: [sensor, store, data]
+      operationId: sensorDataCreate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/sensorDataCreate'
+      responses:
+        '204':
+          description: ok :)
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    get:
+      tags: [sensor, data, get, list]
+      operationId: sensorDataList
+      responses:
+        '200':
+          $ref: '#/components/responses/SensorDataList'
+
+components:
+  schemas:
+    sensorCreate:
+      type: object
+      required:
+        - name
+        - dataType
+      properties:
+        name:
+          type: string
+        dataType:
+          $ref: '#/components/schemas/dataType'
+        inactiveAlertTime:
+          type: integer
+          default: 1800
+          minimum: 2
+        belongsTo:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+
+    sensorGet:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        dataType:
+          $ref: '#/components/schemas/dataType'
+        belongsTo:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+
+
+    sensorList:
+      type: array
+      items:
+        $ref: '#/components/schemas/sensorGet'
+
+
+    sensorDataCreate:
+      type: object
+      properties:
+        value:
+          type: string
+
+    sensorDataList:
+      type: array
+      items:
+        $ref: '#/components/schemas/sensorData'
+
+    sensorData:
+      type: object
+      properties:
+        sensorId:
+          type: string
+        value:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    error:
+      type: object
+      properties:
+        type:
+          type: string
+        message:
+          type: string
+
+    dataType:
+      type: string
+      enum:
+        - string
+        - float
+        - integer
+
+  responses:
+    SensorDataList:
+      description: sensor data list
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/sensorDataList'
+
+    Sensor:
+      description: sensor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/sensorGet'
+
+    SensorList:
+      description: sensor data list
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/sensorList'
+
+    NotFound:
+      description: requested entity not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: bad user input
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    InternalError:
+      description: internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+
