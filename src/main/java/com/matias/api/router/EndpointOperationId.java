@@ -1,6 +1,5 @@
-package com.matias.api;
-
-public enum SwaggerOperationId {
+package com.matias.api.router;
+public enum EndpointOperationId {
   SENSOR_CREATE("sensorCreate"),
   SENSOR_LIST("sensorList"),
   SENSOR_GET("sensorGet"),
@@ -11,7 +10,7 @@ public enum SwaggerOperationId {
 
   public final String operationId;
 
-  SwaggerOperationId(final String operationId) {
+  EndpointOperationId(final String operationId) {
     this.operationId = operationId;
   }
 

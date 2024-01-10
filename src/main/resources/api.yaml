@@ -196,7 +196,7 @@ components:
       type: string
       enum:
         - string
-        - float
+        - decimal
         - integer
 
   responses:

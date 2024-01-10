@@ -1,6 +1,4 @@
 package com.matias;
 
-import io.vertx.core.AbstractVerticle;
-
-public class BaseVerticle extends AbstractVerticle {
-}
+import io.vertx.rxjava3.core.AbstractVerticle;
+public class BaseVerticle extends AbstractVerticle { }
